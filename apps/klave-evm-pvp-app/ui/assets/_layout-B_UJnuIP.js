@@ -1,0 +1,1 @@
+import{j as e}from"./index-BywUjjZ0.js";const o=({error:r})=>e.jsxs("div",{className:"min-h-screen w-full flex flex-col items-center justify-center gap-2 text-center",children:["Oops! Something went wrong. See below:",e.jsx("span",{className:"max-w-[500px] border border-red-500 bg-red-100 rounded-lg p-4",children:JSON.stringify(r)})]});export{o as errorComponent};
