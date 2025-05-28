@@ -71,6 +71,11 @@ impl Network {
         Ok(())
     }
 
+    pub fn remove(&self, name: &str) -> Result<(), Box<dyn std::error::Error>> {
+        klave::ledger::get_table(NETWORK_MANAGER_TABLE).remove(name)?;
+        Ok(())
+    }
+
     pub fn get_rpc_url(&self) -> &str {
         &self.rpc_url
     }

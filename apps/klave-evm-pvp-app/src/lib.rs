@@ -52,6 +52,7 @@ impl Guest for Component {
 
     fn register_routes(){
         klave::router::add_user_transaction("network_add");
+        klave::router::add_user_transaction("network_remove");
         klave::router::add_user_transaction("network_set_chain_id");
         klave::router::add_user_transaction("network_set_gas_price");
         klave::router::add_user_query("networks_all");
@@ -127,6 +128,37 @@ impl Guest for Component {
 
         let mut nm = Networks::get();
         match nm.add_network(&network) {
+            Ok(_) => {
+                klave::notifier::send_string(&format!("network '{}' added", network_name));
+            },
+            Err(e) => {
+                klave::notifier::send_string(&format!("ERROR: failed to add network '{}': {}", network_name, e));
+            }
+        }
+    }
+
+    fn network_remove(cmd: String){
+        let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
+            klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
+            return
+        };
+
+        let mut nm = match Networks::load() {
+            Ok(nm) => nm,
+            Err(e) => {
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                return
+            }
+        };
+
+        let network_name = match v["network_name"].as_str() {
+            Some(c) => c,
+            None => {
+                klave::notifier::send_string(&format!("ERROR: network_name not found"));
+                return;
+            }
+        };
+        match nm.remove_network(network_name) {
             Ok(_) => {
                 klave::notifier::send_string(&format!("network '{}' added", network_name));
             },

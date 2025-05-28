@@ -76,6 +76,29 @@ impl Networks {
         Ok(())
     }
 
+    pub fn remove_network(&mut self, network_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+        let mut found = false;
+        for n in &self.networks {
+            if n == network_name {
+                found = true;
+                break;
+            }
+        }
+        if !found {
+            return Err(format!("network {} not found", network_name).into());
+        }
+
+        // Remove the network from the list
+        self.networks.retain(|n| n != network_name);
+        
+        // Remove the network file
+        let network = Network::load(network_name)?;
+        network.remove(network_name)?;
+
+        self.save()?;
+        Ok(())
+    }
+
     pub fn update_gas_price(&self, network_name: &str, gas_price: u64) -> Result<(), Box<dyn std::error::Error>> {
         let mut network = self.get_network(&network_name)?;
         network.set_gas_price(Some(gas_price));

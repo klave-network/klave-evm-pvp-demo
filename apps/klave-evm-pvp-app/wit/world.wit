@@ -4,6 +4,7 @@ package component:evm-pvp;
 world evm-pvp {
     export register-routes: func();
     export network-add: func(cmd: string);
+    export network-remove: func(cmd: string);
     export network-set-chain-id: func(cmd: string);
     export network-set-gas-price: func(cmd: string);    
     export networks-all: func(cmd: string);
