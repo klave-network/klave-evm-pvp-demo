@@ -28,7 +28,7 @@ pub mod transactions;
 pub mod transaction;
 pub mod users;
 pub mod user;
-pub mod solidity; 
+pub mod solidity;
 pub mod eth;
 pub mod web3;
 
@@ -68,7 +68,7 @@ impl Guest for Component {
         klave::router::add_user_query("wallet_networks");
         klave::router::add_user_query("wallet_transfer");
         klave::router::add_user_query("wallet_deploy_contract");
-        klave::router::add_user_query("wallet_call_contract");        
+        klave::router::add_user_query("wallet_call_contract");
         klave::router::add_user_query("wallets_all_for_user");
         klave::router::add_user_query("wallets_all");
 
@@ -80,7 +80,7 @@ impl Guest for Component {
         klave::router::add_user_query("transaction_get");
         klave::router::add_user_transaction("transaction_commit");
         klave::router::add_user_transaction("transaction_apply");
-        klave::router::add_user_query("transactions_all_for_user");    
+        klave::router::add_user_query("transactions_all_for_user");
 
         klave::router::add_user_query(&String::from("eth_block_number"));
         klave::router::add_user_query(&String::from("eth_get_block_by_number"));
@@ -90,8 +90,8 @@ impl Guest for Component {
         klave::router::add_user_query(&String::from("eth_protocol_version"));
         klave::router::add_user_query(&String::from("eth_chain_id"));
         klave::router::add_user_query(&String::from("eth_get_transaction_by_hash"));
-        klave::router::add_user_query(&String::from("eth_get_transaction_receipt")); 
-        klave::router::add_user_query(&String::from("eth_get_transaction_count"));   
+        klave::router::add_user_query(&String::from("eth_get_transaction_receipt"));
+        klave::router::add_user_query(&String::from("eth_get_transaction_count"));
 
         klave::router::add_user_query(&String::from("web3_client_version"));
         klave::router::add_user_query(&String::from("web3_sha3"));
@@ -100,7 +100,7 @@ impl Guest for Component {
         klave::router::add_user_query(&String::from("get_sender"));
         klave::router::add_user_query(&String::from("get_trusted_time"));
     }
-    
+
     fn network_add(cmd: String){
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
@@ -124,7 +124,7 @@ impl Guest for Component {
         };
         let gas_price = v["gas_price"].as_u64();
         let credentials = v["credentials"].as_str();
-        let network = Network::new(network_name, chain_id, rpc_url, gas_price, credentials);        
+        let network = Network::new(network_name, chain_id, rpc_url, gas_price, credentials);
 
         let mut nm = Networks::get();
         match nm.add_network(&network) {
@@ -146,7 +146,7 @@ impl Guest for Component {
         let mut nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
@@ -173,11 +173,11 @@ impl Guest for Component {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
             return
         };
-    
+
         let nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
@@ -211,11 +211,11 @@ impl Guest for Component {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
             return
         };
-    
+
         let nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
@@ -248,7 +248,7 @@ impl Guest for Component {
         let nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
@@ -273,7 +273,7 @@ impl Guest for Component {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
             return;
         };
-        
+
         let (secret_key, public_key) = match wallet::generate_keypair(v["secret_key"].as_str()) {
             Ok((s, p)) => (s, p),
             Err(e) => {
@@ -281,7 +281,7 @@ impl Guest for Component {
                 return;
             }
         };
-        let wallet = Wallet::new(&secret_key, &public_key);        
+        let wallet = Wallet::new(&secret_key, &public_key);
         let eth_address = wallet.get_eth_address();
 
         let mut wallets = wallets::Wallets::get();
@@ -350,7 +350,7 @@ impl Guest for Component {
         match wallet.add_network(network_name) {
             Ok(_) => klave::notifier::send_string(&format!("new network {} added to wallet", network_name)),
             Err(e) => klave::notifier::send_string(&format!("ERROR: failed to add network {}: {}", network_name, e))
-        };        
+        };
     }
 
     fn wallet_lock(cmd: String){
@@ -418,7 +418,7 @@ impl Guest for Component {
         match wallet.lock(network_name, value, balance) {
             Ok(proof) => klave::notifier::send_string(&format!("locked {} for wallet. here's the proof: {}", value, proof)),
             Err(e) => klave::notifier::send_string(&format!("ERROR: failed to lock {} for wallet: {}", value, e))
-        };        
+        };
     }
 
     fn wallet_unlock(cmd: String) {
@@ -470,7 +470,7 @@ impl Guest for Component {
         match wallet.unlock(network_name, value) {
             Ok(proof) => klave::notifier::send_string(&format!("unlocked {} for wallet. here's the proof: {}", value, proof)),
             Err(e) => klave::notifier::send_string(&format!("ERROR: failed to unlock {} for wallet: {}", value, e))
-        };        
+        };
 
     }
 
@@ -580,8 +580,8 @@ impl Guest for Component {
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
             return;
-        };    
-    
+        };
+
         let chain_id = match v["chainId"].as_u64() {
             Some(c) => c,
             None => {
@@ -646,7 +646,7 @@ impl Guest for Component {
                 return;
             }
         };
-    
+
         let tx = TxEip1559 {
             chain_id: chain_id,
             nonce: nonce,
@@ -685,7 +685,7 @@ impl Guest for Component {
         let nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
@@ -700,8 +700,8 @@ impl Guest for Component {
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
             return;
-        };    
-    
+        };
+
         let chain_id = match v["chainId"].as_u64() {
             Some(c) => c,
             None => {
@@ -724,7 +724,7 @@ impl Guest for Component {
             }
         };
         let input = match v["input"].as_str() {
-            Some(v) => v,            
+            Some(v) => v,
             None => {
                 klave::notifier::send_string(&format!("ERROR: data not found"));
                 return;
@@ -744,7 +744,7 @@ impl Guest for Component {
                 return;
             }
         };
-    
+
         let tx = TxEip1559 {
             chain_id: chain_id,
             nonce: nonce,
@@ -783,7 +783,7 @@ impl Guest for Component {
         let nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
@@ -834,16 +834,16 @@ impl Guest for Component {
         let nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
-        
-        match wallet.get_balance(&nm, network_name) {            
+
+        match wallet.get_balance(&nm, network_name) {
             Ok(result) => klave::notifier::send_string(&result),
             Err(e) => klave::notifier::send_string(&format!("ERROR: failed to send balance: {}", e))
         }
-    }    
+    }
 
     fn wallet_call_contract(cmd: String) {
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
@@ -912,10 +912,10 @@ impl Guest for Component {
             Some(d) => {
                 match d {
                     "mint" => {
-                            hex_encoded_call = hex::encode(mintCall::new((recipient_address, value)).abi_encode());                            
+                            hex_encoded_call = hex::encode(mintCall::new((recipient_address, value)).abi_encode());
                         },
                     "burn" => {
-                            hex_encoded_call = hex::encode(burnCall::new((recipient_address, value)).abi_encode());                            
+                            hex_encoded_call = hex::encode(burnCall::new((recipient_address, value)).abi_encode());
                         },
                     _ => {
                         klave::notifier::send_string(&format!("ERROR: unsupported function call"));
@@ -924,8 +924,8 @@ impl Guest for Component {
                 }
             },
             None => {}
-        };    
-        
+        };
+
         let chain_id = match v["chainId"].as_u64() {
             Some(c) => c,
             None => {
@@ -961,7 +961,7 @@ impl Guest for Component {
                 return;
             }
         };
-    
+
         let tx = TxEip1559 {
             chain_id: chain_id,
             nonce: nonce,
@@ -992,7 +992,7 @@ impl Guest for Component {
         let nm = match Networks::load() {
             Ok(nm) => nm,
             Err(e) => {
-                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));                
+                klave::notifier::send_string(&format!("ERROR: failed to load network manager: {}. Create one first.", e));
                 return
             }
         };
@@ -1007,7 +1007,7 @@ impl Guest for Component {
                 klave::notifier::send_string(&format!("{}", result))
             },
             Err(e) => klave::notifier::send_string(&format!("ERROR: failed to send transaction: {}", e))
-        }        
+        }
     }
 
     fn wallets_all_for_user(_cmd: String) {
@@ -1098,7 +1098,7 @@ impl Guest for Component {
             }
         }
     }
-            
+
     fn user_get(_cmd: String) {
         let sender = match klave::context::get("sender") {
             Ok(s) => s,
@@ -1118,7 +1118,7 @@ impl Guest for Component {
 
         klave::notifier::send_string(&format!("{}", user));
     }
-    
+
     fn user_add_wallet(cmd: String) {
         let sender = match klave::context::get("sender") {
             Ok(s) => s,
@@ -1154,7 +1154,7 @@ impl Guest for Component {
             Err(e) => klave::notifier::send_string(&format!("ERROR: failed to add wallet {} to user {}: {}", eth_address, user.id, e))
         };
     }
-        
+
     fn users_all(_cmd: String) {
         let mut user_strings: Vec<String> = vec![];
         for user_id in Users::get().list {
@@ -1170,7 +1170,7 @@ impl Guest for Component {
 
         klave::notifier::send_string(&format!("{}", serde_json::to_string(&user_strings).unwrap()));
     }
-    
+
     fn transaction_add(cmd: String) {
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
@@ -1208,7 +1208,7 @@ impl Guest for Component {
                 }
             },
         };
-        
+
         let destination_participant = Participant {
             address: match v["destination_address"].as_str() {
                 Some(c) => c.to_string(),
@@ -1243,7 +1243,7 @@ impl Guest for Component {
 
         let payment_vs_payment = PaymentVsPayment {
             source: source_participant,
-            destination: destination_participant,            
+            destination: destination_participant,
             state_machine: PvPstate::Init,
             network_transactions: Vec::<NetworkTransaction>::new()
         };
@@ -1274,7 +1274,7 @@ impl Guest for Component {
             }
         }
     }
-    
+
     fn transaction_get(cmd: String) {
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
@@ -1299,7 +1299,7 @@ impl Guest for Component {
 
         klave::notifier::send_string(&format!("{}", tx));
     }
-    
+
     fn transaction_commit(cmd: String) {
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
@@ -1436,7 +1436,7 @@ impl Guest for Component {
                             network_name: pvp.source.network_name.clone(),
                             tx_hash: tx_hash.clone()
                         });
-                        tx.payment_vs_payment = Some(pvp);                                
+                        tx.payment_vs_payment = Some(pvp);
                         match tx.save() {
                             Ok(_) => (),
                             Err(e) => {
@@ -1461,7 +1461,7 @@ impl Guest for Component {
                         if !found {
                             klave::notifier::send_string(&format!("ERROR: source address '{}' not found in participant wallets", pvp.destination.address));
                             return;
-                        }                        
+                        }
                         let source_address = match v["source_address"].as_str() {
                             Some(c) => c.to_string(),
                             None => {
@@ -1502,7 +1502,7 @@ impl Guest for Component {
                         if source_amount != pvp.destination.amount {
                             klave::notifier::send_string(&format!("ERROR: source_amount '{}' does not match transaction source amount '{}'", source_amount, pvp.destination.amount));
                             return;
-                        };            
+                        };
                         let escrow_address = match v["escrow_address"].as_str() {
                             Some(c) => c.to_string(),
                             None => {
@@ -1514,7 +1514,7 @@ impl Guest for Component {
                             klave::notifier::send_string(&format!("ERROR: escrow_address '{}' does not match transaction escrow address '{}'", escrow_address, tx.escrow_address));
                             return;
                         }
-                        match klave::crypto::random::get_random_bytes(size_of::<SecretKey>() as i32) {                        
+                        match klave::crypto::random::get_random_bytes(size_of::<SecretKey>() as i32) {
                             Ok(result) => {
                                 pvp.state_machine = PvPstate::AwaitingDestinationReceiveFinalized;
                                 pvp.network_transactions.push(NetworkTransaction {
@@ -1522,7 +1522,7 @@ impl Guest for Component {
                                     network_name: pvp.destination.network_name.clone(),
                                     tx_hash: format!("0x{}", hex::encode(result.clone()))
                                 });
-                                tx.payment_vs_payment = Some(pvp);                                
+                                tx.payment_vs_payment = Some(pvp);
                                 match tx.save() {
                                     Ok(_) => (),
                                     Err(e) => {
@@ -1598,7 +1598,7 @@ impl Guest for Component {
                         if destination_amount != pvp.source.amount {
                             klave::notifier::send_string(&format!("ERROR: destination_amount '{}' does not match transaction source amount '{}'", destination_amount, pvp.source.amount));
                             return;
-                        };            
+                        };
                         let escrow_address = match v["escrow_address"].as_str() {
                             Some(c) => c.to_string(),
                             None => {
@@ -1625,7 +1625,7 @@ impl Guest for Component {
                             network_name: pvp.source.network_name.clone(),
                             tx_hash: tx_hash.clone()
                         });
-                        tx.payment_vs_payment = Some(pvp);                                
+                        tx.payment_vs_payment = Some(pvp);
                         match tx.save() {
                             Ok(_) => (),
                             Err(e) => {
@@ -1691,7 +1691,7 @@ impl Guest for Component {
                         if destination_amount != pvp.destination.amount {
                             klave::notifier::send_string(&format!("ERROR: destination_amount '{}' does not match transaction destination amount '{}'", destination_amount, pvp.destination.amount));
                             return;
-                        };            
+                        };
                         let escrow_address = match v["escrow_address"].as_str() {
                             Some(c) => c.to_string(),
                             None => {
@@ -1703,7 +1703,7 @@ impl Guest for Component {
                             klave::notifier::send_string(&format!("ERROR: escrow_address '{}' does not match transaction escrow address '{}'", escrow_address, tx.escrow_address));
                             return;
                         }
-                        match klave::crypto::random::get_random_bytes(size_of::<SecretKey>() as i32) {                        
+                        match klave::crypto::random::get_random_bytes(size_of::<SecretKey>() as i32) {
                             Ok(result) => {
                                 pvp.state_machine = PvPstate::AwaitingSourceSendFinalized;
                                 pvp.network_transactions.push(NetworkTransaction {
@@ -1711,7 +1711,7 @@ impl Guest for Component {
                                     network_name: pvp.destination.network_name.clone(),
                                     tx_hash: format!("0x{}", hex::encode(result.clone()))
                                 });
-                                tx.payment_vs_payment = Some(pvp);                                
+                                tx.payment_vs_payment = Some(pvp);
                                 match tx.save() {
                                     Ok(_) => (),
                                     Err(e) => {
@@ -1736,7 +1736,7 @@ impl Guest for Component {
             None => klave::notifier::send_string(&format!("ERROR: transaction does not have a payment"))
         };
     }
-    
+
     fn transaction_apply(cmd: String) {
         let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
             klave::notifier::send_string(&format!("ERROR: failed to parse '{}' as json", cmd));
@@ -1836,7 +1836,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
                             }
-                        }                        
+                        }
                         let mut source_wallet = match Wallet::load(&pvp.source.address) {
                             Ok(w) => w,
                             Err(e) => {
@@ -1850,7 +1850,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
                             }
-                        }      
+                        }
                         pvp.state_machine = PvPstate::AwaitingDestinationReceive;
                         tx.payment_vs_payment = Some(pvp.clone());
                         match tx.save() {
@@ -1861,7 +1861,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to save transaction: {}", e));
                                 return;
                             }
-                        }                  
+                        }
                     },
                     PvPstate::AwaitingDestinationReceive => {
                         klave::notifier::send_string(&format!("ERROR: transaction is not in the correct state to process payment"));
@@ -1905,7 +1905,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
                             }
-                        }                        
+                        }
                         let mut destination_wallet = match Wallet::load(&pvp.destination.address) {
                             Ok(w) => w,
                             Err(e) => {
@@ -1919,7 +1919,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
                             }
-                        }  
+                        }
                         pvp.state_machine = PvPstate::AwaitingDestinationSend;
                         tx.payment_vs_payment = Some(pvp);
                         match tx.save() {
@@ -1930,7 +1930,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to save transaction: {}", e));
                                 return;
                             }
-                        }                  
+                        }
                     },
                     PvPstate::AwaitingDestinationSend => {
                         klave::notifier::send_string(&format!("ERROR: transaction is not in the correct state to process payment"));
@@ -1974,7 +1974,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
                             }
-                        }                        
+                        }
                         let mut source_wallet = match Wallet::load(&pvp.source.address) {
                             Ok(w) => w,
                             Err(e) => {
@@ -1988,7 +1988,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
                             }
-                        }           
+                        }
                         pvp.state_machine = PvPstate::AwaitingSourceSend;
                         tx.payment_vs_payment = Some(pvp);
                         match tx.save() {
@@ -1999,7 +1999,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to save transaction: {}", e));
                                 return;
                             }
-                        }                  
+                        }
                     },
                     PvPstate::AwaitingSourceSend => {
                         klave::notifier::send_string(&format!("ERROR: transaction is not in the correct state to process payment"));
@@ -2043,7 +2043,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
                             }
-                        }                        
+                        }
                         let mut destination_wallet = match Wallet::load(&pvp.destination.address) {
                             Ok(w) => w,
                             Err(e) => {
@@ -2056,8 +2056,8 @@ impl Guest for Component {
                             Err(e) => {
                                 klave::notifier::send_string(&format!("ERROR: failed to mint: {}", e));
                                 return;
-                            }                            
-                        }    
+                            }
+                        }
                         pvp.state_machine = PvPstate::Complete;
                         tx.payment_vs_payment = Some(pvp);
                         match tx.save() {
@@ -2068,7 +2068,7 @@ impl Guest for Component {
                                 klave::notifier::send_string(&format!("ERROR: failed to save transaction: {}", e));
                                 return;
                             }
-                        }                  
+                        }
                     },
                     PvPstate::Complete => {
                         klave::notifier::send_string(&format!("SUCCESS: transaction is already complete"));
@@ -2189,7 +2189,7 @@ mod tests {
 
     #[test]
     fn test_solidity_hex_encode() {
-        let recipient_address = Address::from_str("0x0E8f8ad443a1270a7D8Af3B30D288DaA0F988e40").unwrap();   
+        let recipient_address = Address::from_str("0x0E8f8ad443a1270a7D8Af3B30D288DaA0F988e40").unwrap();
         let value = U256::from_str_radix("0x2386F26FC10000".trim_start_matches("0x"), 16).unwrap();
         let hex_encoded_call = hex::encode(mintCall::new((recipient_address, value)).abi_encode());
 
